@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late final AnimationController _gradCtrl;
   late final AudioPlayer _player;
-  final AudioQuery _audioQuery = AudioQuery();
+  final OnAudioQuery _audioQuery = OnAudioQuery();
 
   List<SongModel>? _songs;
   bool _granted = false;
