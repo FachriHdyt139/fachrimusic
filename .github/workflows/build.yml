@@ -1,0 +1,49 @@
+name: Build APK FachriMusic
+
+# Kapan pabrik jalan? Setiap kamu push ke branch 'main',
+# atau ditekan manual dari tab Actions.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ambil kode dari repo
+        uses: actions/checkout@v4
+
+      - name: Pasang Flutter (mesin pabrik)
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Generate struktur project Android
+        run: flutter create --org com.fachri --project-name fachrimusic --platforms android .
+
+      - name: Pastikan label & izin aplikasi benar
+        run: |
+          MF=android/app/src/main/AndroidManifest.xml
+          sed -i 's/android:label="[^"]*"/android:label="FachriMusic"/' "$MF"
+          if ! grep -q 'android.permission.READ_MEDIA_AUDIO' "$MF"; then
+            sed -i 's|    <application|    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>\n    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>\n    <application|' "$MF"
+          fi
+          echo "=== Hasil manifest ==="
+          grep -E 'android:label|uses-permission' "$MF"
+
+      - name: Unduh semua paket (dependencies)
+        run: flutter pub get
+
+      - name: Buat icon aplikasi (logo kita)
+        run: dart run flutter_launcher_icons
+
+      - name: Rakit APK release
+        run: flutter build apk --release
+
+      - name: Unggah hasil APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: fachrimusic-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
