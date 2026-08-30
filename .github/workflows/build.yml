@@ -36,6 +36,20 @@ jobs:
       - name: Unduh semua paket (dependencies)
         run: flutter pub get
 
+      - name: Patch plugin Android lama (tambahkan namespace utk AGP 8)
+        run: |
+          SRC=$(ls -d $HOME/.pub-cache/hosted/pub.dev/on_audio_query_android-*/ 2>/dev/null | head -1)
+          echo "Plugin ditemukan: ${SRC}"
+          if [ -f "${SRC}android/build.gradle" ]; then
+            if ! grep -q 'namespace' "${SRC}android/build.gradle"; then
+              sed -i 's/^android {/android {\n    namespace "com.lucasjosino.on_audio_query"/' "${SRC}android/build.gradle"
+            fi
+            echo "--> namespace sekarang:"
+            grep -n 'namespace' "${SRC}android/build.gradle"
+          else
+            echo "!! build.gradle plugin tidak ditemukan (cek path cache)"
+          fi
+
       - name: Buat icon aplikasi (logo kita)
         run: dart run flutter_launcher_icons
 
