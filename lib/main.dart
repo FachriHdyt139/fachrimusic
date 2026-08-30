@@ -457,7 +457,7 @@ class _HomePageState extends State<HomePage>
   // ---------- Player bar (panel bawah) ----------
   Widget _buildPlayerBar() {
     final s = _songs![_currentIndex];
-    final max = _duration.inMilliseconds > 0 ? _duration.inMilliseconds : 1.0;
+    final max = _duration.inMilliseconds > 0 ? _duration.inMilliseconds.toDouble() : 1.0;
     final pos = _position.inMilliseconds.clamp(0, _duration.inMilliseconds).toDouble();
 
     return Container(
@@ -553,7 +553,7 @@ class _MatrixRain extends CustomPainter {
   final double progress;
   _MatrixRain(this.progress);
 
-  static const _chars = ['0', '1', '<', '>', '/', '#', '$', '%', '&', '*', '=', '+'];
+  static const _chars = ['0', '1', '<', '>', '/', '#', '\$', '%', '&', '*', '=', '+'];
 
   @override
   void paint(Canvas canvas, Size size) {
